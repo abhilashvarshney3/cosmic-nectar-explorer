@@ -21,3 +21,15 @@ export interface PlanetaryPosition {
   sign: string;
   degrees: number;
 }
+
+export interface BirthChart {
+  ascendant: string;
+  houses: HouseData[];
+  planets: PlanetaryPosition[];
+}
+
+export interface HouseData {
+  number: number;
+  sign: string;
+  planets: PlanetaryPosition[];
+}

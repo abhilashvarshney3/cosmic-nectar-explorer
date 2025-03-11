@@ -1,8 +1,9 @@
 
 import { useState, useRef, useEffect } from 'react';
-import { Message, BirthDetails } from '@/lib/types';
-import { sendMessage } from '@/lib/chatService';
+import { Message, BirthDetails, BirthChart as BirthChartType } from '@/lib/types';
+import { sendMessage, generateBirthChart } from '@/lib/chatService';
 import MessageBubble from './MessageBubble';
+import BirthChart from './BirthChart';
 import { ArrowUp, Mic } from 'lucide-react';
 
 interface ChatInterfaceProps {
@@ -13,23 +14,34 @@ const ChatInterface = ({ birthDetails }: ChatInterfaceProps) => {
   const [messages, setMessages] = useState<Message[]>([]);
   const [inputValue, setInputValue] = useState('');
   const [isTyping, setIsTyping] = useState(false);
+  const [birthChart, setBirthChart] = useState<BirthChartType | null>(null);
+  const [showBirthChart, setShowBirthChart] = useState(true);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   
-  // Initial greeting message
+  // Generate birth chart and initial greeting message
   useEffect(() => {
-    const initialMessage = async () => {
+    const loadBirthChartAndGreeting = async () => {
       setIsTyping(true);
       try {
-        const response = await sendMessage(`Hello, I'm ${birthDetails.name}`, birthDetails);
+        // Generate birth chart first
+        const chart = await generateBirthChart(birthDetails);
+        setBirthChart(chart);
+        
+        // Then get initial greeting message
+        const response = await sendMessage(
+          `Hello, I'm ${birthDetails.name}. Please analyze my birth chart.`, 
+          birthDetails,
+          chart
+        );
         setMessages([response]);
       } catch (error) {
-        console.error('Failed to get initial message:', error);
+        console.error('Failed to initialize chat:', error);
       } finally {
         setIsTyping(false);
       }
     };
     
-    initialMessage();
+    loadBirthChartAndGreeting();
   }, [birthDetails]);
   
   // Scroll to bottom when messages change
@@ -54,7 +66,7 @@ const ChatInterface = ({ birthDetails }: ChatInterfaceProps) => {
     
     try {
       // Get AI response
-      const aiResponse = await sendMessage(inputValue, birthDetails);
+      const aiResponse = await sendMessage(inputValue, birthDetails, birthChart || undefined);
       setMessages(prev => [...prev, aiResponse]);
     } catch (error) {
       console.error('Failed to send message:', error);
@@ -63,13 +75,30 @@ const ChatInterface = ({ birthDetails }: ChatInterfaceProps) => {
     }
   };
 
+  const toggleBirthChart = () => {
+    setShowBirthChart(prev => !prev);
+  };
+
   return (
-    <div className="chat-container glass-card h-full">
-      <div className="bg-gradient-primary text-white px-4 py-3 rounded-t-xl flex items-center">
+    <div className="chat-container glass-card h-full flex flex-col">
+      <div className="bg-gradient-primary text-white px-4 py-3 rounded-t-xl flex items-center justify-between">
         <h2 className="text-lg font-cinzel">Vedic Astrology Consultation</h2>
+        <button 
+          onClick={toggleBirthChart}
+          className="text-white hover:text-amber-200 transition-colors text-sm px-3 py-1 rounded border border-white/30"
+        >
+          {showBirthChart ? 'Hide Chart' : 'Show Chart'}
+        </button>
       </div>
       
-      <div className="messages-container">
+      {/* Birth Chart Section */}
+      {birthChart && showBirthChart && (
+        <div className="animate-card-flip p-4 overflow-auto">
+          <BirthChart birthChart={birthChart} />
+        </div>
+      )}
+      
+      <div className="messages-container flex-1 overflow-y-auto">
         {messages.map(message => (
           <MessageBubble key={message.id} message={message} />
         ))}
@@ -85,7 +114,7 @@ const ChatInterface = ({ birthDetails }: ChatInterfaceProps) => {
         <div ref={messagesEndRef}></div>
       </div>
       
-      <div className="message-input">
+      <div className="message-input mt-auto">
         <div className="chat-input">
           <button className="p-2 rounded-full text-gray-500 hover:text-vedic-purple transition-colors">
             <Mic size={18} />

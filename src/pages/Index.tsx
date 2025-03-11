@@ -46,8 +46,6 @@ const Index = () => {
       <footer className="w-full max-w-4xl mx-auto mt-8 text-center text-sm text-gray-500">
         <p>Powered by Vedic wisdom and modern technology</p>
       </footer>
-      
-      {/* CSS classes moved to App.css, so we can remove the inline style tag */}
     </div>
   );
 };
