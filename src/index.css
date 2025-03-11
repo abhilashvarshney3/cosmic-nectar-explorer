@@ -1,101 +1,124 @@
+
+@import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@600&family=Poppins:wght@400;500&family=Noto+Sans+Devanagari:wght@400&display=swap');
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
 @layer base {
   :root {
-    --background: 0 0% 100%;
-    --foreground: 222.2 84% 4.9%;
+    --background: 0 0% 98%;
+    --foreground: 246 30% 24%;
 
     --card: 0 0% 100%;
-    --card-foreground: 222.2 84% 4.9%;
+    --card-foreground: 246 30% 24%;
 
     --popover: 0 0% 100%;
-    --popover-foreground: 222.2 84% 4.9%;
+    --popover-foreground: 246 30% 24%;
 
-    --primary: 222.2 47.4% 11.2%;
-    --primary-foreground: 210 40% 98%;
+    --primary: 246 40% 24%;
+    --primary-foreground: 0 0% 98%;
 
-    --secondary: 210 40% 96.1%;
-    --secondary-foreground: 222.2 47.4% 11.2%;
+    --secondary: 271 75% 50%;
+    --secondary-foreground: 0 0% 98%;
 
     --muted: 210 40% 96.1%;
     --muted-foreground: 215.4 16.3% 46.9%;
 
-    --accent: 210 40% 96.1%;
-    --accent-foreground: 222.2 47.4% 11.2%;
+    --accent: 39 96% 52%;
+    --accent-foreground: 246 30% 24%;
 
     --destructive: 0 84.2% 60.2%;
     --destructive-foreground: 210 40% 98%;
 
     --border: 214.3 31.8% 91.4%;
     --input: 214.3 31.8% 91.4%;
-    --ring: 222.2 84% 4.9%;
+    --ring: 271 75% 50%;
 
-    --radius: 0.5rem;
-
-    --sidebar-background: 0 0% 98%;
-
-    --sidebar-foreground: 240 5.3% 26.1%;
-
-    --sidebar-primary: 240 5.9% 10%;
-
-    --sidebar-primary-foreground: 0 0% 98%;
-
-    --sidebar-accent: 240 4.8% 95.9%;
-
-    --sidebar-accent-foreground: 240 5.9% 10%;
-
-    --sidebar-border: 220 13% 91%;
-
-    --sidebar-ring: 217.2 91.2% 59.8%;
+    --radius: 0.75rem;
   }
 
-  .dark {
-    --background: 222.2 84% 4.9%;
-    --foreground: 210 40% 98%;
-
-    --card: 222.2 84% 4.9%;
-    --card-foreground: 210 40% 98%;
-
-    --popover: 222.2 84% 4.9%;
-    --popover-foreground: 210 40% 98%;
-
-    --primary: 210 40% 98%;
-    --primary-foreground: 222.2 47.4% 11.2%;
-
-    --secondary: 217.2 32.6% 17.5%;
-    --secondary-foreground: 210 40% 98%;
-
-    --muted: 217.2 32.6% 17.5%;
-    --muted-foreground: 215 20.2% 65.1%;
-
-    --accent: 217.2 32.6% 17.5%;
-    --accent-foreground: 210 40% 98%;
-
-    --destructive: 0 62.8% 30.6%;
-    --destructive-foreground: 210 40% 98%;
-
-    --border: 217.2 32.6% 17.5%;
-    --input: 217.2 32.6% 17.5%;
-    --ring: 212.7 26.8% 83.9%;
-    --sidebar-background: 240 5.9% 10%;
-    --sidebar-foreground: 240 4.8% 95.9%;
-    --sidebar-primary: 224.3 76.3% 48%;
-    --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 240 3.7% 15.9%;
-    --sidebar-accent-foreground: 240 4.8% 95.9%;
-    --sidebar-border: 240 3.7% 15.9%;
-    --sidebar-ring: 217.2 91.2% 59.8%;
-  }
-}
-
-@layer base {
   * {
     @apply border-border;
   }
 
   body {
-    @apply bg-background text-foreground;
+    @apply bg-vedic-ash text-foreground font-poppins antialiased;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-cinzel;
+  }
+}
+
+@layer components {
+  .glass-card {
+    @apply bg-white/90 backdrop-blur-sm border border-white/40 shadow-card rounded-xl;
+  }
+  
+  .input-field {
+    @apply w-full px-4 py-3 rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-secondary focus:border-transparent transition-all duration-200;
+  }
+  
+  .btn-primary {
+    @apply px-6 py-3 rounded-lg font-medium bg-gradient-primary text-white shadow-md hover:shadow-lg transition-all duration-200 hover:scale-[1.02] active:scale-[0.98];
+  }
+  
+  .btn-secondary {
+    @apply px-6 py-3 rounded-lg font-medium bg-white text-vedic-navy border border-gray-200 shadow-sm hover:shadow-md transition-all duration-200 hover:scale-[1.02] active:scale-[0.98];
+  }
+
+  .mandala-bg {
+    background-image: url("data:image/svg+xml,%3Csvg width='100' height='100' viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M50 50 L50 0 A50 50 0 0 1 100 50 L50 50 L50 100 A50 50 0 0 1 0 50 L50 50 Z' fill='%236D28D9' fill-opacity='0.02'/%3E%3C/svg%3E");
+    background-size: 200px 200px;
+  }
+  
+  .chat-container {
+    @apply flex flex-col h-full overflow-hidden;
+  }
+  
+  .messages-container {
+    @apply flex-1 overflow-y-auto p-4 space-y-4;
+  }
+  
+  .message-input {
+    @apply p-4 border-t border-gray-200;
+  }
+
+  .chat-input {
+    @apply w-full flex items-center gap-2 bg-white rounded-full px-4 py-2 border border-gray-200 focus-within:border-secondary focus-within:ring-2 focus-within:ring-secondary/20;
+  }
+  
+  .chat-input input {
+    @apply flex-1 bg-transparent border-none focus:outline-none;
+  }
+  
+  .send-button {
+    @apply p-2 rounded-full text-white bg-gradient-primary hover:scale-105 transition-transform;
+  }
+
+  /* Special styling for user and AI message bubbles */
+  .user-message {
+    @apply bg-gradient-primary text-white rounded-2xl rounded-tr-sm px-4 py-3 max-w-[80%] ml-auto shadow-message;
+  }
+  
+  .ai-message {
+    @apply bg-white border-l-2 border-vedic-gold rounded-2xl rounded-tl-sm px-4 py-3 max-w-[80%] mr-auto shadow-message;
+  }
+  
+  .typing-indicator {
+    @apply flex space-x-1 items-center px-4 py-2 bg-gray-100 rounded-full max-w-[80px] mr-auto;
+  }
+  
+  .typing-indicator span {
+    @apply w-2 h-2 bg-gray-400 rounded-full animate-bounce-gentle;
+  }
+  
+  .typing-indicator span:nth-child(2) {
+    animation-delay: 0.1s;
+  }
+  
+  .typing-indicator span:nth-child(3) {
+    animation-delay: 0.2s;
   }
 }
