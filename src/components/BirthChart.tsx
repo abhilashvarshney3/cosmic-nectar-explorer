@@ -58,23 +58,9 @@ const BirthChart = ({ birthChart }: BirthChartProps) => {
         </span>
       </div>
 
-      {/* Zodiac Chart - North Indian Style */}
+      {/* Zodiac Chart - North Indian Style (Properly oriented) */}
       <div className="aspect-square w-full max-w-md mx-auto grid grid-cols-3 grid-rows-3 gap-1 border-2 border-gray-300 rounded-lg overflow-hidden">
-        {/* North Indian chart layout - Fixed positioning */}
-        <div className="flex flex-col p-1 border border-gray-200" style={{ backgroundColor: `${getSignColor(houses[0].sign)}20` }}>
-          <div className="flex justify-between text-xs mb-1">
-            <span>1</span>
-            <span>{houses[0].sign.substring(0, 3)}</span>
-          </div>
-          <div className="flex flex-wrap justify-center items-center flex-1">
-            {houses[0].planets.map((planet, i) => (
-              <div key={i} className="m-1 text-sm" title={`${planet.planet} at ${planet.degrees}° ${planet.sign}`}>
-                {getPlanetSymbol(planet.planet)}
-              </div>
-            ))}
-          </div>
-        </div>
-
+        {/* Top row - houses 12, 1, 2 */}
         <div className="flex flex-col p-1 border border-gray-200" style={{ backgroundColor: `${getSignColor(houses[11].sign)}20` }}>
           <div className="flex justify-between text-xs mb-1">
             <span>12</span>
@@ -89,13 +75,13 @@ const BirthChart = ({ birthChart }: BirthChartProps) => {
           </div>
         </div>
 
-        <div className="flex flex-col p-1 border border-gray-200" style={{ backgroundColor: `${getSignColor(houses[10].sign)}20` }}>
+        <div className="flex flex-col p-1 border border-gray-200" style={{ backgroundColor: `${getSignColor(houses[0].sign)}20` }}>
           <div className="flex justify-between text-xs mb-1">
-            <span>11</span>
-            <span>{houses[10].sign.substring(0, 3)}</span>
+            <span>1</span>
+            <span>{houses[0].sign.substring(0, 3)}</span>
           </div>
           <div className="flex flex-wrap justify-center items-center flex-1">
-            {houses[10].planets.map((planet, i) => (
+            {houses[0].planets.map((planet, i) => (
               <div key={i} className="m-1 text-sm" title={`${planet.planet} at ${planet.degrees}° ${planet.sign}`}>
                 {getPlanetSymbol(planet.planet)}
               </div>
@@ -117,22 +103,23 @@ const BirthChart = ({ birthChart }: BirthChartProps) => {
           </div>
         </div>
 
-        <div className="flex items-center justify-center bg-gradient-to-br from-gray-50 to-gray-100">
-          <span className="text-xl font-cinzel text-vedic-navy">🕉️</span>
-        </div>
-
-        <div className="flex flex-col p-1 border border-gray-200" style={{ backgroundColor: `${getSignColor(houses[9].sign)}20` }}>
+        {/* Middle row - houses 11, center, 3 */}
+        <div className="flex flex-col p-1 border border-gray-200" style={{ backgroundColor: `${getSignColor(houses[10].sign)}20` }}>
           <div className="flex justify-between text-xs mb-1">
-            <span>10</span>
-            <span>{houses[9].sign.substring(0, 3)}</span>
+            <span>11</span>
+            <span>{houses[10].sign.substring(0, 3)}</span>
           </div>
           <div className="flex flex-wrap justify-center items-center flex-1">
-            {houses[9].planets.map((planet, i) => (
+            {houses[10].planets.map((planet, i) => (
               <div key={i} className="m-1 text-sm" title={`${planet.planet} at ${planet.degrees}° ${planet.sign}`}>
                 {getPlanetSymbol(planet.planet)}
               </div>
             ))}
           </div>
+        </div>
+
+        <div className="flex items-center justify-center bg-gradient-to-br from-gray-50 to-gray-100">
+          <span className="text-xl font-cinzel text-vedic-navy">🕉️</span>
         </div>
 
         <div className="flex flex-col p-1 border border-gray-200" style={{ backgroundColor: `${getSignColor(houses[2].sign)}20` }}>
@@ -149,13 +136,14 @@ const BirthChart = ({ birthChart }: BirthChartProps) => {
           </div>
         </div>
 
-        <div className="flex flex-col p-1 border border-gray-200" style={{ backgroundColor: `${getSignColor(houses[3].sign)}20` }}>
+        {/* Bottom row - houses 10, 9, 4 */}
+        <div className="flex flex-col p-1 border border-gray-200" style={{ backgroundColor: `${getSignColor(houses[9].sign)}20` }}>
           <div className="flex justify-between text-xs mb-1">
-            <span>4</span>
-            <span>{houses[3].sign.substring(0, 3)}</span>
+            <span>10</span>
+            <span>{houses[9].sign.substring(0, 3)}</span>
           </div>
           <div className="flex flex-wrap justify-center items-center flex-1">
-            {houses[3].planets.map((planet, i) => (
+            {houses[9].planets.map((planet, i) => (
               <div key={i} className="m-1 text-sm" title={`${planet.planet} at ${planet.degrees}° ${planet.sign}`}>
                 {getPlanetSymbol(planet.planet)}
               </div>
@@ -177,13 +165,13 @@ const BirthChart = ({ birthChart }: BirthChartProps) => {
           </div>
         </div>
 
-        <div className="flex flex-col p-1 border border-gray-200" style={{ backgroundColor: `${getSignColor(houses[7].sign)}20` }}>
+        <div className="flex flex-col p-1 border border-gray-200" style={{ backgroundColor: `${getSignColor(houses[3].sign)}20` }}>
           <div className="flex justify-between text-xs mb-1">
-            <span>8</span>
-            <span>{houses[7].sign.substring(0, 3)}</span>
+            <span>4</span>
+            <span>{houses[3].sign.substring(0, 3)}</span>
           </div>
           <div className="flex flex-wrap justify-center items-center flex-1">
-            {houses[7].planets.map((planet, i) => (
+            {houses[3].planets.map((planet, i) => (
               <div key={i} className="m-1 text-sm" title={`${planet.planet} at ${planet.degrees}° ${planet.sign}`}>
                 {getPlanetSymbol(planet.planet)}
               </div>
@@ -191,46 +179,15 @@ const BirthChart = ({ birthChart }: BirthChartProps) => {
           </div>
         </div>
 
-        <div className="flex flex-col p-1 border border-gray-200" style={{ backgroundColor: `${getSignColor(houses[6].sign)}20` }}>
-          <div className="flex justify-between text-xs mb-1">
-            <span>7</span>
-            <span>{houses[6].sign.substring(0, 3)}</span>
-          </div>
-          <div className="flex flex-wrap justify-center items-center flex-1">
-            {houses[6].planets.map((planet, i) => (
-              <div key={i} className="m-1 text-sm" title={`${planet.planet} at ${planet.degrees}° ${planet.sign}`}>
-                {getPlanetSymbol(planet.planet)}
-              </div>
-            ))}
-          </div>
-        </div>
-
-        <div className="flex flex-col p-1 border border-gray-200" style={{ backgroundColor: `${getSignColor(houses[5].sign)}20` }}>
-          <div className="flex justify-between text-xs mb-1">
-            <span>6</span>
-            <span>{houses[5].sign.substring(0, 3)}</span>
-          </div>
-          <div className="flex flex-wrap justify-center items-center flex-1">
-            {houses[5].planets.map((planet, i) => (
-              <div key={i} className="m-1 text-sm" title={`${planet.planet} at ${planet.degrees}° ${planet.sign}`}>
-                {getPlanetSymbol(planet.planet)}
-              </div>
-            ))}
-          </div>
-        </div>
-
-        <div className="flex flex-col p-1 border border-gray-200" style={{ backgroundColor: `${getSignColor(houses[4].sign)}20` }}>
-          <div className="flex justify-between text-xs mb-1">
-            <span>5</span>
-            <span>{houses[4].sign.substring(0, 3)}</span>
-          </div>
-          <div className="flex flex-wrap justify-center items-center flex-1">
-            {houses[4].planets.map((planet, i) => (
-              <div key={i} className="m-1 text-sm" title={`${planet.planet} at ${planet.degrees}° ${planet.sign}`}>
-                {getPlanetSymbol(planet.planet)}
-              </div>
-            ))}
-          </div>
+        {/* Hidden elements for houses 5-8 (not visible in the 3x3 grid but included for data completeness) */}
+        <div className="hidden">
+          {[4, 5, 6, 7].map((idx) => (
+            <div key={idx} className="house-data">
+              {houses[idx].planets.map((planet, i) => (
+                <div key={i}>{getPlanetSymbol(planet.planet)}</div>
+              ))}
+            </div>
+          ))}
         </div>
       </div>
 

@@ -2,13 +2,13 @@
 import { Message, BirthDetails, BirthChart } from './types';
 
 // Your AI agent URL
-const AI_AGENT_URL = 'https://8329-iymeru9khpn7v3p9uva6h-226a4af3.manus.computer';
+const AI_AGENT_URL = 'https://8329-ig71cupcafd9mg6iskbb6-b0f917a4.manus.computer';
 
 // Generate a birth chart from birth details
 export const generateBirthChart = async (birthDetails: BirthDetails): Promise<BirthChart> => {
   try {
     // First try to use your AI agent
-    const response = await fetch(`${AI_AGENT_URL}/generate-birth-chart`, {
+    const response = await fetch(`${AI_AGENT_URL}/vedic_astrology_project/script/generate-birth-chart`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -90,7 +90,7 @@ export const sendMessage = async (
   try {
     // Try to use the AI agent
     if (birthDetails) {
-      const response = await fetch(`${AI_AGENT_URL}/chat`, {
+      const response = await fetch(`${AI_AGENT_URL}/vedic_astrology_project/script/chat`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
