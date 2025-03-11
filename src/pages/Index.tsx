@@ -49,23 +49,7 @@ const Index = () => {
         <p>Powered by Vedic wisdom and modern technology</p>
       </footer>
       
-      <style jsx>{`
-        .perspective-1000 {
-          perspective: 1000px;
-        }
-        
-        .transform-style-preserve-3d {
-          transform-style: preserve-3d;
-        }
-        
-        .backface-hidden {
-          backface-visibility: hidden;
-        }
-        
-        .rotate-y-180 {
-          transform: rotateY(180deg);
-        }
-      `}</style>
+      {/* CSS classes moved to App.css, so we can remove the inline style tag */}
     </div>
   );
 };
