@@ -28,19 +28,17 @@ const Index = () => {
       </header>
       
       <main className="w-full max-w-4xl mx-auto flex-1 perspective-1000 relative">
-        <div className={`transition-transform duration-600 ease-out transform-style-preserve-3d ${
-          showChat ? 'rotate-y-180 invisible' : ''
+        {/* Form side */}
+        <div className={`transition-transform duration-600 ease-out ${
+          showChat ? 'hidden' : 'block'
         }`}>
           <BirthDetailsForm onSubmit={handleFormSubmit} />
         </div>
         
+        {/* Chat side */}
         {birthDetails && (
-          <div className={`absolute inset-0 transition-transform duration-600 ease-out transform-style-preserve-3d ${
-            showChat ? 'animate-card-flip' : 'rotate-y-180 invisible'
-          }`}>
-            <div className="backface-hidden h-full">
-              <ChatInterface birthDetails={birthDetails} />
-            </div>
+          <div className={`${showChat ? 'block' : 'hidden'}`}>
+            <ChatInterface birthDetails={birthDetails} />
           </div>
         )}
       </main>
