@@ -91,9 +91,9 @@ const ChatInterface = ({ birthDetails }: ChatInterfaceProps) => {
         </button>
       </div>
       
-      {/* Birth Chart Section */}
+      {/* Birth Chart Section - Removed animation */}
       {birthChart && showBirthChart && (
-        <div className="animate-card-flip p-4 overflow-auto">
+        <div className="p-4 overflow-auto">
           <BirthChart birthChart={birthChart} />
         </div>
       )}
