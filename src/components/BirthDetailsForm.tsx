@@ -1,5 +1,5 @@
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { BirthDetails } from '@/lib/types';
 import InputField from './InputField';
 import DatePicker from './DatePicker';
@@ -17,6 +17,7 @@ const BirthDetailsForm = ({ onSubmit }: BirthDetailsFormProps) => {
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [activeStep, setActiveStep] = useState(0);
   const [isLoading, setIsLoading] = useState(false);
+  const [isStepValid, setIsStepValid] = useState(false);
   
   const steps = [
     { id: 'name', icon: <User size={18} /> },
@@ -24,6 +25,35 @@ const BirthDetailsForm = ({ onSubmit }: BirthDetailsFormProps) => {
     { id: 'time', icon: <Clock size={18} /> },
     { id: 'location', icon: <MapPin size={18} /> }
   ];
+  
+  // Validate current step whenever relevant fields change
+  useEffect(() => {
+    validateCurrentStep();
+  }, [name, date, time, location, activeStep]);
+  
+  const validateCurrentStep = () => {
+    let isValid = false;
+    
+    switch (activeStep) {
+      case 0:
+        isValid = !!name.trim();
+        break;
+      case 1:
+        isValid = !!date;
+        break;
+      case 2:
+        isValid = !!time;
+        break;
+      case 3:
+        isValid = !!location.trim();
+        break;
+      default:
+        isValid = false;
+    }
+    
+    setIsStepValid(isValid);
+    return isValid;
+  };
   
   const validateForm = () => {
     const newErrors: Record<string, string> = {};
@@ -63,7 +93,9 @@ const BirthDetailsForm = ({ onSubmit }: BirthDetailsFormProps) => {
   
   const handleNext = () => {
     if (activeStep < steps.length - 1) {
-      setActiveStep(activeStep + 1);
+      if (validateCurrentStep()) {
+        setActiveStep(activeStep + 1);
+      }
     } else {
       handleSubmit(new Event('submit') as unknown as React.FormEvent);
     }
@@ -183,8 +215,8 @@ const BirthDetailsForm = ({ onSubmit }: BirthDetailsFormProps) => {
             <button
               type="button"
               onClick={handleNext}
-              className="btn-primary"
-              disabled={isLoading}
+              className={`btn-primary ${!isStepValid ? 'opacity-50 cursor-not-allowed' : ''}`}
+              disabled={isLoading || !isStepValid}
             >
               {isLoading ? (
                 <div className="flex items-center">

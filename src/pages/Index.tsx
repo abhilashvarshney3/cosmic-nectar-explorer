@@ -16,6 +16,10 @@ const Index = () => {
     }, 400);
   };
   
+  const handleBackFromChat = () => {
+    setShowChat(false);
+  };
+  
   return (
     <div className="min-h-screen flex flex-col items-center justify-center bg-gradient-to-br from-[#f8f9fa] to-[#e9ecef] p-4">
       <header className="w-full max-w-4xl mx-auto text-center mb-8">
@@ -38,7 +42,10 @@ const Index = () => {
         {/* Chat side */}
         {birthDetails && (
           <div className={`${showChat ? 'block' : 'hidden'}`}>
-            <ChatInterface birthDetails={birthDetails} />
+            <ChatInterface 
+              birthDetails={birthDetails} 
+              onBackClick={handleBackFromChat}
+            />
           </div>
         )}
       </main>

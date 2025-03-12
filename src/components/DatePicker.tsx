@@ -1,5 +1,4 @@
-
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { format } from 'date-fns';
 import { Calendar as CalendarIcon, ChevronDown } from 'lucide-react';
 import { Calendar } from '@/components/ui/calendar';
@@ -35,22 +34,60 @@ const DatePicker = ({ date, setDate, error }: DatePickerProps) => {
   ];
 
   const currentYear = new Date().getFullYear();
-  const years = Array.from({ length: 100 }, (_, i) => currentYear - 99 + i);
+  const years = Array.from({ length: 150 }, (_, i) => currentYear - 100 + i);
+
+  // Update month and year state when date changes externally
+  useEffect(() => {
+    if (date) {
+      setMonth(date.getMonth());
+      setYear(date.getFullYear());
+    }
+  }, [date]);
 
   const handleMonthChange = (value: string) => {
-    setMonth(parseInt(value));
-    if (date) {
-      const newDate = new Date(date.setMonth(parseInt(value)));
-      setDate(newDate);
+    const newMonth = parseInt(value);
+    setMonth(newMonth);
+    
+    const newDate = date ? new Date(date) : new Date();
+    newDate.setMonth(newMonth);
+    
+    if (!date) {
+      // If no date was selected yet, set it to the 1st of the month
+      newDate.setDate(1);
+      newDate.setFullYear(year);
+    } else {
+      // Keep the current day, but adjust it if it would overflow the month
+      const newMonthDays = new Date(newDate.getFullYear(), newMonth + 1, 0).getDate();
+      if (newDate.getDate() > newMonthDays) {
+        newDate.setDate(newMonthDays);
+      }
     }
+    
+    setDate(newDate);
   };
 
   const handleYearChange = (value: string) => {
-    setYear(parseInt(value));
-    if (date) {
-      const newDate = new Date(date.setFullYear(parseInt(value)));
-      setDate(newDate);
+    const newYear = parseInt(value);
+    setYear(newYear);
+    
+    const newDate = date ? new Date(date) : new Date();
+    
+    // Store the day before changing the year (to handle leap years)
+    const currentDay = newDate.getDate();
+    
+    newDate.setFullYear(newYear);
+    
+    if (!date) {
+      // If no date was selected yet, set it to the 1st of the month
+      newDate.setDate(1);
+      newDate.setMonth(month);
+    } else {
+      // Check if we need to adjust the day (e.g., February 29 -> February 28 in non-leap years)
+      const maxDay = new Date(newYear, newDate.getMonth() + 1, 0).getDate();
+      newDate.setDate(Math.min(currentDay, maxDay));
     }
+    
+    setDate(newDate);
   };
 
   return (
@@ -72,13 +109,13 @@ const DatePicker = ({ date, setDate, error }: DatePickerProps) => {
             {date ? format(date, 'PPP') : <span>Pick a date</span>}
           </button>
         </PopoverTrigger>
-        <PopoverContent className="w-auto p-0" align="start">
+        <PopoverContent className="w-auto p-0 bg-white" align="start">
           <div className="flex gap-2 p-3 border-b">
             <Select value={month.toString()} onValueChange={handleMonthChange}>
               <SelectTrigger className="w-[120px]">
                 <SelectValue placeholder="Month" />
               </SelectTrigger>
-              <SelectContent position="popper">
+              <SelectContent className="bg-white max-h-[300px]" position="popper">
                 {months.map((month, index) => (
                   <SelectItem key={index} value={index.toString()}>
                     {month}
@@ -91,7 +128,7 @@ const DatePicker = ({ date, setDate, error }: DatePickerProps) => {
               <SelectTrigger className="w-[100px]">
                 <SelectValue placeholder="Year" />
               </SelectTrigger>
-              <SelectContent position="popper">
+              <SelectContent className="bg-white max-h-[300px] overflow-y-auto" position="popper">
                 {years.map((year) => (
                   <SelectItem key={year} value={year.toString()}>
                     {year}
@@ -104,18 +141,18 @@ const DatePicker = ({ date, setDate, error }: DatePickerProps) => {
           <Calendar
             mode="single"
             selected={date}
-            onSelect={(date) => {
-              setDate(date);
-              if (date) {
-                setMonth(date.getMonth());
-                setYear(date.getFullYear());
+            onSelect={(newDate) => {
+              setDate(newDate);
+              if (newDate) {
+                setMonth(newDate.getMonth());
+                setYear(newDate.getFullYear());
               }
               setOpen(false);
             }}
             month={new Date(year, month)}
-            onMonthChange={(date) => {
-              setMonth(date.getMonth());
-              setYear(date.getFullYear());
+            onMonthChange={(newDate) => {
+              setMonth(newDate.getMonth());
+              setYear(newDate.getFullYear());
             }}
             disabled={(date) => date > new Date()}
             initialFocus

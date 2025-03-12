@@ -4,14 +4,15 @@ import { Message, BirthDetails, BirthChart as BirthChartType } from '@/lib/types
 import { sendMessage, generateBirthChart } from '@/lib/chatService';
 import MessageBubble from './MessageBubble';
 import BirthChart from './BirthChart';
-import { ArrowUp, Mic, RotateCcw } from 'lucide-react';
+import { ArrowUp, Mic, RotateCcw, ArrowLeft } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 
 interface ChatInterfaceProps {
   birthDetails: BirthDetails;
+  onBackClick: () => void;
 }
 
-const ChatInterface = ({ birthDetails }: ChatInterfaceProps) => {
+const ChatInterface = ({ birthDetails, onBackClick }: ChatInterfaceProps) => {
   const [messages, setMessages] = useState<Message[]>([]);
   const [inputValue, setInputValue] = useState('');
   const [isTyping, setIsTyping] = useState(false);
@@ -132,7 +133,16 @@ const ChatInterface = ({ birthDetails }: ChatInterfaceProps) => {
   return (
     <div className="chat-container glass-card h-full flex flex-col">
       <div className="bg-gradient-primary text-white px-4 py-3 rounded-t-xl flex items-center justify-between">
-        <h2 className="text-lg font-cinzel">Vedic Astrology Consultation</h2>
+        <div className="flex items-center">
+          <button 
+            onClick={onBackClick}
+            className="mr-3 text-white hover:text-amber-200 transition-colors"
+            title="Go back to birth details"
+          >
+            <ArrowLeft size={18} />
+          </button>
+          <h2 className="text-lg font-cinzel">Vedic Astrology Consultation</h2>
+        </div>
         <div className="flex items-center space-x-2">
           {isError && (
             <button 
