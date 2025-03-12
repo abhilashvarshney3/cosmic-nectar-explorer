@@ -4,7 +4,8 @@ import { Message, BirthDetails, BirthChart as BirthChartType } from '@/lib/types
 import { sendMessage, generateBirthChart } from '@/lib/chatService';
 import MessageBubble from './MessageBubble';
 import BirthChart from './BirthChart';
-import { ArrowUp, Mic } from 'lucide-react';
+import { ArrowUp, Mic, RotateCcw } from 'lucide-react';
+import { useToast } from '@/hooks/use-toast';
 
 interface ChatInterfaceProps {
   birthDetails: BirthDetails;
@@ -16,12 +17,15 @@ const ChatInterface = ({ birthDetails }: ChatInterfaceProps) => {
   const [isTyping, setIsTyping] = useState(false);
   const [birthChart, setBirthChart] = useState<BirthChartType | null>(null);
   const [showBirthChart, setShowBirthChart] = useState(true);
+  const [isError, setIsError] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  const { toast } = useToast();
   
   // Generate birth chart and initial greeting message
   useEffect(() => {
     const loadBirthChartAndGreeting = async () => {
       setIsTyping(true);
+      setIsError(false);
       try {
         // Generate birth chart first
         const chart = await generateBirthChart(birthDetails);
@@ -36,13 +40,19 @@ const ChatInterface = ({ birthDetails }: ChatInterfaceProps) => {
         setMessages([response]);
       } catch (error) {
         console.error('Failed to initialize chat:', error);
+        setIsError(true);
+        toast({
+          title: "Connection Error",
+          description: "Could not connect to the AI agent. Using fallback responses.",
+          variant: "destructive",
+        });
       } finally {
         setIsTyping(false);
       }
     };
     
     loadBirthChartAndGreeting();
-  }, [birthDetails]);
+  }, [birthDetails, toast]);
   
   // Scroll to bottom when messages change
   useEffect(() => {
@@ -63,6 +73,7 @@ const ChatInterface = ({ birthDetails }: ChatInterfaceProps) => {
     setMessages(prev => [...prev, userMessage]);
     setInputValue('');
     setIsTyping(true);
+    setIsError(false);
     
     try {
       // Get AI response
@@ -70,6 +81,21 @@ const ChatInterface = ({ birthDetails }: ChatInterfaceProps) => {
       setMessages(prev => [...prev, aiResponse]);
     } catch (error) {
       console.error('Failed to send message:', error);
+      setIsError(true);
+      toast({
+        title: "Message Error",
+        description: "Could not get a response from the AI agent. Using fallback response.",
+        variant: "destructive",
+      });
+      
+      // Add fallback message
+      const fallbackMessage: Message = {
+        id: Date.now().toString(),
+        content: "I'm sorry, I couldn't connect to the astrology analysis service. Please try again later.",
+        sender: 'ai',
+        timestamp: new Date()
+      };
+      setMessages(prev => [...prev, fallbackMessage]);
     } finally {
       setIsTyping(false);
     }
@@ -79,26 +105,62 @@ const ChatInterface = ({ birthDetails }: ChatInterfaceProps) => {
     setShowBirthChart(prev => !prev);
   };
 
+  const retryConnection = async () => {
+    if (messages.length <= 1) {
+      // If there's only the greeting or no messages, restart the whole process
+      setMessages([]);
+      setIsTyping(true);
+      try {
+        const chart = await generateBirthChart(birthDetails);
+        setBirthChart(chart);
+        const response = await sendMessage(
+          `Hello, I'm ${birthDetails.name}. Please analyze my birth chart.`, 
+          birthDetails,
+          chart
+        );
+        setMessages([response]);
+        setIsError(false);
+      } catch (error) {
+        console.error('Failed to retry connection:', error);
+        setIsError(true);
+      } finally {
+        setIsTyping(false);
+      }
+    }
+  };
+
   return (
     <div className="chat-container glass-card h-full flex flex-col">
       <div className="bg-gradient-primary text-white px-4 py-3 rounded-t-xl flex items-center justify-between">
         <h2 className="text-lg font-cinzel">Vedic Astrology Consultation</h2>
-        <button 
-          onClick={toggleBirthChart}
-          className="text-white hover:text-amber-200 transition-colors text-sm px-3 py-1 rounded border border-white/30"
-        >
-          {showBirthChart ? 'Hide Chart' : 'Show Chart'}
-        </button>
+        <div className="flex items-center space-x-2">
+          {isError && (
+            <button 
+              onClick={retryConnection}
+              className="text-white hover:text-amber-200 transition-colors text-sm px-2 py-1 rounded border border-white/30 flex items-center"
+              title="Retry connection to AI agent"
+            >
+              <RotateCcw size={14} className="mr-1" />
+              Retry
+            </button>
+          )}
+          <button 
+            onClick={toggleBirthChart}
+            className="text-white hover:text-amber-200 transition-colors text-sm px-3 py-1 rounded border border-white/30"
+          >
+            {showBirthChart ? 'Hide Chart' : 'Show Chart'}
+          </button>
+        </div>
       </div>
       
-      {/* Birth Chart Section - Removed animation */}
+      {/* Birth Chart Section */}
       {birthChart && showBirthChart && (
         <div className="p-4 overflow-auto">
           <BirthChart birthChart={birthChart} />
         </div>
       )}
       
-      <div className="messages-container flex-1 overflow-y-auto">
+      <div className="messages-container flex-1 overflow-y-auto p-4">
         {messages.map(message => (
           <MessageBubble key={message.id} message={message} />
         ))}
@@ -114,7 +176,7 @@ const ChatInterface = ({ birthDetails }: ChatInterfaceProps) => {
         <div ref={messagesEndRef}></div>
       </div>
       
-      <div className="message-input mt-auto">
+      <div className="message-input mt-auto p-4 border-t border-gray-200">
         <div className="chat-input">
           <button className="p-2 rounded-full text-gray-500 hover:text-vedic-purple transition-colors">
             <Mic size={18} />
@@ -132,6 +194,7 @@ const ChatInterface = ({ birthDetails }: ChatInterfaceProps) => {
             }}
             placeholder="Ask about your birth chart..."
             aria-label="Message input"
+            disabled={isTyping}
           />
           
           <button 

@@ -1,7 +1,7 @@
 
 import { Message, BirthDetails, BirthChart } from './types';
 
-// Your AI agent URL
+// Your AI agent URL - updated to the correct URL
 const AI_AGENT_URL = 'https://8329-ig71cupcafd9mg6iskbb6-b0f917a4.manus.computer';
 
 // Generate a birth chart from birth details
@@ -17,7 +17,9 @@ export const generateBirthChart = async (birthDetails: BirthDetails): Promise<Bi
     });
 
     if (response.ok) {
-      return await response.json();
+      const data = await response.json();
+      console.log('Birth chart generated successfully:', data);
+      return data;
     }
     
     console.log('Falling back to mock birth chart data as AI agent response failed');
@@ -90,6 +92,8 @@ export const sendMessage = async (
   try {
     // Try to use the AI agent
     if (birthDetails) {
+      console.log('Sending message to AI agent:', message);
+      
       const response = await fetch(`${AI_AGENT_URL}/vedic_astrology_project/script/chat`, {
         method: 'POST',
         headers: {
@@ -104,6 +108,8 @@ export const sendMessage = async (
 
       if (response.ok) {
         const data = await response.json();
+        console.log('Received response from AI agent:', data);
+        
         return {
           id: Date.now().toString(),
           content: data.content || data.message || "I received your message but couldn't generate a proper response.",
@@ -112,6 +118,8 @@ export const sendMessage = async (
           type: data.type || 'text',
           planetaryData: data.planetaryData
         };
+      } else {
+        console.warn('AI agent returned non-OK response:', response.status);
       }
     }
     
