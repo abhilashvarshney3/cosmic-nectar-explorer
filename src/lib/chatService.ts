@@ -1,23 +1,15 @@
-
 import { Message, BirthDetails, BirthChart } from './types';
-import { toast } from '@/hooks/use-toast';
-
-// This should be the URL where your Python AI agent is running
-// For example: http://localhost:5000 if running locally with Flask
-// or https://your-deployed-service.com if deployed
-const AI_AGENT_URL = 'http://localhost:5000'; // CHANGE THIS to where your Python service is running
-
-// You need to make sure your Python service has these endpoints implemented
-const BIRTH_CHART_ENDPOINT = '/vedic_astrology_project/script/generate-birth-chart';
-const CHAT_ENDPOINT = '/vedic_astrology_project/script/chat';
+import { useToast } from '@/hooks/use-toast';
+import { getApiServerUrl, API_ENDPOINTS } from './apiConfig';
 
 // Generate a birth chart from birth details
 export const generateBirthChart = async (birthDetails: BirthDetails): Promise<BirthChart> => {
   try {
     console.log('Sending birth details to AI agent:', birthDetails);
+    const serverUrl = getApiServerUrl();
     
-    // First try to use your AI agent
-    const response = await fetch(`${AI_AGENT_URL}${BIRTH_CHART_ENDPOINT}`, {
+    // First try to use our Python AI agent
+    const response = await fetch(`${serverUrl}${API_ENDPOINTS.GENERATE_CHART}`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -32,21 +24,13 @@ export const generateBirthChart = async (birthDetails: BirthDetails): Promise<Bi
     }
     
     console.warn('AI agent response failed with status:', response.status);
-    toast({
-      title: "Connection Failed",
-      description: "Could not connect to the AI agent. Using fallback data.",
-      variant: "destructive",
-    });
+    console.log('Using fallback data as real API failed');
     
     // Fallback mock data if the agent is not reachable
     return generateMockBirthChart(birthDetails);
   } catch (error) {
     console.error('Error generating birth chart:', error);
-    toast({
-      title: "Connection Error",
-      description: "Could not connect to the AI agent. Using fallback data.",
-      variant: "destructive",
-    });
+    console.log('Using fallback data due to error');
     
     // Fallback to mock data
     return generateMockBirthChart(birthDetails);
@@ -114,8 +98,9 @@ export const sendMessage = async (
     // Try to use the AI agent
     if (birthDetails) {
       console.log('Sending message to AI agent:', message);
+      const serverUrl = getApiServerUrl();
       
-      const response = await fetch(`${AI_AGENT_URL}${CHAT_ENDPOINT}`, {
+      const response = await fetch(`${serverUrl}${API_ENDPOINTS.CHAT_ENDPOINT}`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -141,11 +126,7 @@ export const sendMessage = async (
         };
       } else {
         console.warn('AI agent returned non-OK response:', response.status);
-        toast({
-          title: "AI Response Error",
-          description: "The AI agent returned an error. Using fallback response.",
-          variant: "destructive",
-        });
+        console.log('Using fallback responses as API failed');
       }
     }
     
@@ -154,11 +135,7 @@ export const sendMessage = async (
     return mockAiResponse(message);
   } catch (error) {
     console.error('Error sending message to AI agent:', error);
-    toast({
-      title: "Connection Error",
-      description: "Could not connect to the AI agent. Using fallback response.",
-      variant: "destructive",
-    });
+    console.log('Using fallback responses due to error');
     
     // Fallback to mock responses
     return mockAiResponse(message);

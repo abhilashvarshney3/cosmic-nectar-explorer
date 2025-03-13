@@ -2,6 +2,7 @@
 import { useState } from 'react';
 import BirthDetailsForm from '@/components/BirthDetailsForm';
 import ChatInterface from '@/components/ChatInterface';
+import BackendStatus from '@/components/BackendStatus';
 import { BirthDetails } from '@/lib/types';
 import { Toaster } from '@/components/ui/toaster';
 
@@ -54,6 +55,9 @@ const Index = () => {
       <footer className="w-full max-w-4xl mx-auto mt-8 text-center text-sm text-gray-500">
         <p>Powered by Vedic wisdom and modern technology</p>
       </footer>
+      
+      {/* Backend Status Indicator */}
+      <BackendStatus />
       
       <Toaster />
     </div>
