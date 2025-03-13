@@ -1,4 +1,3 @@
-
 import { useState, useRef, useEffect } from 'react';
 import { Message, BirthDetails, BirthChart as BirthChartType } from '@/lib/types';
 import { sendMessage, generateBirthChart } from '@/lib/chatService';
@@ -22,37 +21,50 @@ const ChatInterface = ({ birthDetails, onBackClick }: ChatInterfaceProps) => {
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const { toast } = useToast();
   
-  // Generate birth chart and initial greeting message
+  // Keep track of the last used birth details to prevent redundant regeneration
+  const birthDetailsRef = useRef<string>('');
+  
+  // Generate birth chart and initial greeting message whenever birth details change
   useEffect(() => {
-    const loadBirthChartAndGreeting = async () => {
-      setIsTyping(true);
-      setIsError(false);
-      try {
-        // Generate birth chart first
-        const chart = await generateBirthChart(birthDetails);
-        setBirthChart(chart);
-        
-        // Then get initial greeting message
-        const response = await sendMessage(
-          `Hello, I'm ${birthDetails.name}. Please analyze my birth chart.`, 
-          birthDetails,
-          chart
-        );
-        setMessages([response]);
-      } catch (error) {
-        console.error('Failed to initialize chat:', error);
-        setIsError(true);
-        toast({
-          title: "Connection Error",
-          description: "Could not connect to the AI agent. Using fallback responses.",
-          variant: "destructive",
-        });
-      } finally {
-        setIsTyping(false);
-      }
-    };
+    const birthDetailsString = JSON.stringify(birthDetails);
     
-    loadBirthChartAndGreeting();
+    // Only regenerate if birth details have changed
+    if (birthDetailsString !== birthDetailsRef.current) {
+      birthDetailsRef.current = birthDetailsString;
+      
+      const loadBirthChartAndGreeting = async () => {
+        setIsTyping(true);
+        setIsError(false);
+        setMessages([]); // Clear messages when birth details change
+        
+        try {
+          console.log('Generating new birth chart with details:', birthDetails);
+          // Generate birth chart first
+          const chart = await generateBirthChart(birthDetails);
+          setBirthChart(chart);
+          
+          // Then get initial greeting message
+          const response = await sendMessage(
+            `Hello, I'm ${birthDetails.name}. Please analyze my birth chart.`, 
+            birthDetails,
+            chart
+          );
+          setMessages([response]);
+        } catch (error) {
+          console.error('Failed to initialize chat:', error);
+          setIsError(true);
+          toast({
+            title: "Connection Error",
+            description: "Could not connect to the AI agent. Using fallback responses.",
+            variant: "destructive",
+          });
+        } finally {
+          setIsTyping(false);
+        }
+      };
+      
+      loadBirthChartAndGreeting();
+    }
   }, [birthDetails, toast]);
   
   // Scroll to bottom when messages change
@@ -107,26 +119,27 @@ const ChatInterface = ({ birthDetails, onBackClick }: ChatInterfaceProps) => {
   };
 
   const retryConnection = async () => {
-    if (messages.length <= 1) {
-      // If there's only the greeting or no messages, restart the whole process
-      setMessages([]);
-      setIsTyping(true);
-      try {
-        const chart = await generateBirthChart(birthDetails);
-        setBirthChart(chart);
-        const response = await sendMessage(
-          `Hello, I'm ${birthDetails.name}. Please analyze my birth chart.`, 
-          birthDetails,
-          chart
-        );
-        setMessages([response]);
-        setIsError(false);
-      } catch (error) {
-        console.error('Failed to retry connection:', error);
-        setIsError(true);
-      } finally {
-        setIsTyping(false);
-      }
+    // Force regeneration of birth chart regardless of whether birth details changed
+    birthDetailsRef.current = '';
+    setMessages([]);
+    setIsTyping(true);
+    
+    try {
+      console.log('Retrying connection with details:', birthDetails);
+      const chart = await generateBirthChart(birthDetails);
+      setBirthChart(chart);
+      const response = await sendMessage(
+        `Hello, I'm ${birthDetails.name}. Please analyze my birth chart.`, 
+        birthDetails,
+        chart
+      );
+      setMessages([response]);
+      setIsError(false);
+    } catch (error) {
+      console.error('Failed to retry connection:', error);
+      setIsError(true);
+    } finally {
+      setIsTyping(false);
     }
   };
 

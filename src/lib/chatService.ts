@@ -9,6 +9,11 @@ export const generateBirthChart = async (birthDetails: BirthDetails): Promise<Bi
     // Try to use Prokerala API if keys are available
     if (API_KEYS.PROKERALA_CLIENT_ID && API_KEYS.PROKERALA_CLIENT_SECRET) {
       try {
+        console.log('Using Prokerala API with keys:', 
+          API_KEYS.PROKERALA_CLIENT_ID.substring(0, 5) + '...',
+          API_KEYS.PROKERALA_CLIENT_SECRET.substring(0, 5) + '...'
+        );
+        
         const formData = new URLSearchParams();
         formData.append('client_id', API_KEYS.PROKERALA_CLIENT_ID);
         formData.append('client_secret', API_KEYS.PROKERALA_CLIENT_SECRET);
@@ -18,8 +23,12 @@ export const generateBirthChart = async (birthDetails: BirthDetails): Promise<Bi
         const date = new Date(birthDetails.date);
         const formattedDate = `${date.getFullYear()}-${(date.getMonth() + 1).toString().padStart(2, '0')}-${date.getDate().toString().padStart(2, '0')}`;
         
+        console.log('Using formatted date and time:', formattedDate, birthDetails.time);
+        
         formData.append('datetime', `${formattedDate} ${birthDetails.time}:00`);
         formData.append('coordinates', '28.6139,77.2090'); // Default to Delhi if location parsing fails
+        
+        console.log('Sending Prokerala API request with body:', Object.fromEntries(formData.entries()));
         
         const response = await fetch(API_ENDPOINTS.BIRTH_CHART, {
           method: 'POST',
@@ -29,8 +38,11 @@ export const generateBirthChart = async (birthDetails: BirthDetails): Promise<Bi
           body: formData,
         });
         
+        console.log('Prokerala API response status:', response.status);
+        
         if (response.ok) {
           const data = await response.json();
+          console.log('Prokerala API response data:', data);
           return formatProkeralaBirthChart(data);
         }
         
@@ -62,6 +74,8 @@ export const generateBirthChart = async (birthDetails: BirthDetails): Promise<Bi
           tzone: 5.5, // Default to Indian time zone
         };
         
+        console.log('Using VedicRishiAstro API with data:', userData);
+        
         const response = await fetch(API_ENDPOINTS.BACKUP_BIRTH_CHART, {
           method: 'POST',
           headers: {
@@ -82,8 +96,8 @@ export const generateBirthChart = async (birthDetails: BirthDetails): Promise<Bi
       }
     }
     
-    // Fall back to public API to get some random data if no API keys or all APIs fail
-    console.log('No API keys available or all APIs failed. Using mock birth chart data.');
+    // Fall back to mock birth chart based on birth details
+    console.log('No API keys available or all APIs failed. Using birth details to generate mock data.');
     return generateMockBirthChart(birthDetails);
   } catch (error) {
     console.error('Error generating birth chart:', error);
@@ -214,16 +228,45 @@ const formatVedicRishiBirthChart = (data: any): BirthChart => {
   }
 };
 
-// Mock birth chart generation when API is not available
+// Mock birth chart generation based on actual birth details
 const generateMockBirthChart = (birthDetails: BirthDetails): BirthChart => {
-  // Determine ascendant based on birth time (simplified)
-  const hour = parseInt(birthDetails.time.split(':')[0]);
-  const ascendantIndex = (hour % 12);
+  console.log('Generating mock birth chart with birth details:', birthDetails);
+  
+  // Use birth date to generate deterministic but unique chart for each date
+  const date = new Date(birthDetails.date);
+  const dayOfMonth = date.getDate();
+  const month = date.getMonth() + 1;
+  const year = date.getFullYear();
+  
+  // Create a numeric seed based on birth date
+  const dateSeed = (year * 10000) + (month * 100) + dayOfMonth;
+  
+  // Determine ascendant based on birth time (add some variation based on date)
+  const hourStr = birthDetails.time.split(':')[0];
+  const minuteStr = birthDetails.time.split(':')[1];
+  const hour = parseInt(hourStr);
+  const minute = parseInt(minuteStr);
+  
+  // Create a seed based on time
+  const timeSeed = (hour * 60) + minute;
+  
+  // Combined seed for deterministic random generation
+  const combinedSeed = dateSeed + timeSeed;
+  
   const zodiacSigns = [
     "Aries", "Taurus", "Gemini", "Cancer", 
     "Leo", "Virgo", "Libra", "Scorpio", 
     "Sagittarius", "Capricorn", "Aquarius", "Pisces"
   ];
+  
+  // Deterministic "random" number generator
+  const seededRandom = (seed: number) => {
+    const x = Math.sin(seed) * 10000;
+    return x - Math.floor(x);
+  };
+  
+  // Get ascendant based on birth time and date
+  const ascendantIndex = Math.floor(seededRandom(combinedSeed) * 12);
   const ascendant = zodiacSigns[ascendantIndex];
   
   // Generate houses
@@ -238,17 +281,21 @@ const generateMockBirthChart = (birthDetails: BirthDetails): BirthChart => {
   }
   
   // Generate planet positions
-  const planets = [
-    { planet: "Sun", house: 1, sign: zodiacSigns[0], degrees: Math.random() * 30 },
-    { planet: "Moon", house: 4, sign: zodiacSigns[3], degrees: Math.random() * 30 },
-    { planet: "Mercury", house: 2, sign: zodiacSigns[1], degrees: Math.random() * 30 },
-    { planet: "Venus", house: 7, sign: zodiacSigns[6], degrees: Math.random() * 30 },
-    { planet: "Mars", house: 10, sign: zodiacSigns[9], degrees: Math.random() * 30 },
-    { planet: "Jupiter", house: 5, sign: zodiacSigns[4], degrees: Math.random() * 30 },
-    { planet: "Saturn", house: 11, sign: zodiacSigns[10], degrees: Math.random() * 30 },
-    { planet: "Rahu", house: 3, sign: zodiacSigns[2], degrees: Math.random() * 30 },
-    { planet: "Ketu", house: 9, sign: zodiacSigns[8], degrees: Math.random() * 30 }
-  ];
+  const planetNames = ["Sun", "Moon", "Mercury", "Venus", "Mars", "Jupiter", "Saturn", "Rahu", "Ketu"];
+  const planets = planetNames.map((planet, index) => {
+    // Use the index and combined seed to place planets uniquely but deterministically
+    const houseSeed = combinedSeed + (index * 100);
+    const houseNumber = Math.floor(seededRandom(houseSeed) * 12) + 1;
+    const sign = zodiacSigns[(ascendantIndex + houseNumber - 1) % 12];
+    const degrees = seededRandom(houseSeed * 2) * 30;
+    
+    return {
+      planet,
+      house: houseNumber,
+      sign,
+      degrees
+    };
+  });
   
   // Add planets to houses
   planets.forEach(planet => {
@@ -257,6 +304,8 @@ const generateMockBirthChart = (birthDetails: BirthDetails): BirthChart => {
       house.planets.push(planet);
     }
   });
+  
+  console.log('Generated mock birth chart:', { ascendant, houses: houses.length, planets: planets.length });
   
   return {
     ascendant,
@@ -363,24 +412,33 @@ export const sendMessage = async (
       }
     }
     
-    console.log('No API keys available or API failed. Using mock responses.');
+    console.log('No API keys available or API failed. Using mock responses with birth chart data.');
     // Fallback to mock responses if no API key or API failed
-    return mockAiResponse(message, birthChart);
+    return mockAiResponse(message, birthChart, birthDetails);
   } catch (error) {
     console.error('Error sending message to AI:', error);
     console.log('Using fallback responses due to error');
     
     // Fallback to mock responses
-    return mockAiResponse(message, birthChart);
+    return mockAiResponse(message, birthChart, birthDetails);
   }
 };
 
-// Mock AI responses based on the birth chart
-const mockAiResponse = (message: string, birthChart?: BirthChart): Message => {
+// Mock AI responses based on the birth chart and birth details
+const mockAiResponse = (message: string, birthChart?: BirthChart, birthDetails?: BirthDetails): Message => {
+  // Create some variability in responses based on birth details
+  let responseVariant = 0;
+  
+  if (birthDetails) {
+    const date = new Date(birthDetails.date);
+    // Use month and day to create variability
+    responseVariant = (date.getMonth() + date.getDate()) % 5;
+  }
+  
   if (message.toLowerCase().includes('planet') || message.toLowerCase().includes('position')) {
     return {
       id: Date.now().toString(),
-      content: "Based on your birth details, here are your planetary positions:",
+      content: `Based on your birth details (${birthDetails ? new Date(birthDetails.date).toDateString() : 'Unknown'}), here are your planetary positions:`,
       sender: 'ai',
       timestamp: new Date(),
       type: 'planetary',
@@ -393,17 +451,33 @@ const mockAiResponse = (message: string, birthChart?: BirthChart): Message => {
       ]
     };
   } else if (message.toLowerCase().includes('remedy') || message.toLowerCase().includes('solution')) {
+    const remedyResponses = [
+      "Based on your chart with Moon in the 4th house, I recommend: 1) Wear a silver pendant on Mondays. 2) Offer milk to a banyan tree on full moon nights. 3) Chant Moon mantras for emotional stability.",
+      "With Mars prominently placed in your chart, these remedies may help: 1) Wear a red coral on your ring finger. 2) Donate red lentils on Tuesdays. 3) Recite Hanuman Chalisa regularly to balance Mars energy.",
+      "Your Saturn placement suggests these remedies: 1) Feed crows on Saturdays. 2) Wear an iron ring on your middle finger. 3) Donate black sesame seeds to the needy for karmic balance.",
+      "With Venus in the 12th house, try these remedies: 1) Wear a diamond or white sapphire on Fridays. 2) Donate white clothes or sweets to young girls. 3) Recite Venus mantras for relationship harmony.",
+      "For Jupiter's influence in your chart: 1) Wear a yellow sapphire on Thursdays. 2) Donate books or knowledge resources to students. 3) Feed dogs on Thursdays to enhance wisdom and fortune."
+    ];
+    
     return {
       id: Date.now().toString(),
-      content: "I recommend the following remedies based on your chart: 1) Wear a red coral on your ring finger on Tuesday morning. 2) Recite the Hanuman Chalisa on Saturdays. 3) Donate wheat and jaggery to the needy on Thursdays.",
+      content: remedyResponses[responseVariant],
       sender: 'ai',
       timestamp: new Date(),
       type: 'remedy'
     };
   } else {
+    const generalResponses = [
+      "Based on your unique birth chart, I notice your Moon in the 4th house indicates strong emotional intelligence and connection to home and family. Your Jupiter aspects your 10th house, suggesting career growth through teaching or advisory roles.",
+      "Your chart shows a strong Saturn in the 11th house, indicating you may build wealth slowly but surely through disciplined saving. The Sun in your 1st house gives you leadership qualities and a strong sense of self.",
+      "With Mercury in your 2nd house, you likely have strong communication skills that could benefit you financially. Your Venus in the 7th house blesses your partnerships and gives you diplomatic abilities in relationships.",
+      "Your Mars in the 10th house suggests a career that requires courage and initiative. The Rahu-Ketu axis across your 3rd and 9th houses indicates a balance needed between practical skills and higher knowledge.",
+      "The ascendant lord in your 5th house shows creativity and potential success in speculative ventures. Your Moon's aspect to Jupiter creates an optimistic emotional nature and possibly spiritual inclinations."
+    ];
+    
     return {
       id: Date.now().toString(),
-      content: "As per your Vedic astrology chart, you have a strong Jupiter in the 5th house, which blesses you with creative intelligence and possibly children who will bring you happiness. Your Moon in the 4th house gives you a nurturing personality and deep emotional intelligence.",
+      content: `${generalResponses[responseVariant]} This reading is based on your birth date (${birthDetails ? new Date(birthDetails.date).toDateString() : 'Unknown'}) and the planetary positions in your chart.`,
       sender: 'ai',
       timestamp: new Date()
     };
