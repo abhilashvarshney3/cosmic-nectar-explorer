@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from 'react';
 import { format } from 'date-fns';
 import { Calendar as CalendarIcon, ChevronDown } from 'lucide-react';
@@ -109,13 +110,21 @@ const DatePicker = ({ date, setDate, error }: DatePickerProps) => {
             {date ? format(date, 'PPP') : <span>Pick a date</span>}
           </button>
         </PopoverTrigger>
-        <PopoverContent className="w-auto p-0 bg-white" align="start">
+        <PopoverContent 
+          className="w-auto p-0 bg-white" 
+          align="start"
+          style={{ maxHeight: '80vh', overflowY: 'auto' }}
+        >
           <div className="flex gap-2 p-3 border-b">
             <Select value={month.toString()} onValueChange={handleMonthChange}>
               <SelectTrigger className="w-[120px]">
                 <SelectValue placeholder="Month" />
               </SelectTrigger>
-              <SelectContent className="bg-white max-h-[300px]" position="popper">
+              <SelectContent 
+                className="bg-white" 
+                position="popper"
+                style={{ maxHeight: '200px', overflowY: 'auto' }}
+              >
                 {months.map((month, index) => (
                   <SelectItem key={index} value={index.toString()}>
                     {month}
@@ -128,7 +137,11 @@ const DatePicker = ({ date, setDate, error }: DatePickerProps) => {
               <SelectTrigger className="w-[100px]">
                 <SelectValue placeholder="Year" />
               </SelectTrigger>
-              <SelectContent className="bg-white max-h-[300px] overflow-y-auto" position="popper">
+              <SelectContent 
+                className="bg-white" 
+                position="popper"
+                style={{ maxHeight: '200px', overflowY: 'auto' }}
+              >
                 {years.map((year) => (
                   <SelectItem key={year} value={year.toString()}>
                     {year}

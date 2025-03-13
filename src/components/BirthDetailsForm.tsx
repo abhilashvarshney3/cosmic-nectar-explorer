@@ -4,6 +4,7 @@ import { BirthDetails } from '@/lib/types';
 import InputField from './InputField';
 import DatePicker from './DatePicker';
 import { Calendar, MapPin, Clock, User } from 'lucide-react';
+import { useToast } from '@/hooks/use-toast';
 
 interface BirthDetailsFormProps {
   onSubmit: (details: BirthDetails) => void;
@@ -18,6 +19,7 @@ const BirthDetailsForm = ({ onSubmit }: BirthDetailsFormProps) => {
   const [activeStep, setActiveStep] = useState(0);
   const [isLoading, setIsLoading] = useState(false);
   const [isStepValid, setIsStepValid] = useState(false);
+  const { toast } = useToast();
   
   const steps = [
     { id: 'name', icon: <User size={18} /> },
@@ -33,24 +35,46 @@ const BirthDetailsForm = ({ onSubmit }: BirthDetailsFormProps) => {
   
   const validateCurrentStep = () => {
     let isValid = false;
+    const newErrors: Record<string, string> = { ...errors };
     
     switch (activeStep) {
       case 0:
         isValid = !!name.trim();
+        if (!isValid) {
+          newErrors.name = 'Name is required';
+        } else {
+          delete newErrors.name;
+        }
         break;
       case 1:
         isValid = !!date;
+        if (!isValid) {
+          newErrors.date = 'Date of birth is required';
+        } else {
+          delete newErrors.date;
+        }
         break;
       case 2:
         isValid = !!time;
+        if (!isValid) {
+          newErrors.time = 'Time of birth is required';
+        } else {
+          delete newErrors.time;
+        }
         break;
       case 3:
         isValid = !!location.trim();
+        if (!isValid) {
+          newErrors.location = 'Birth location is required';
+        } else {
+          delete newErrors.location;
+        }
         break;
       default:
         isValid = false;
     }
     
+    setErrors(newErrors);
     setIsStepValid(isValid);
     return isValid;
   };
@@ -58,10 +82,10 @@ const BirthDetailsForm = ({ onSubmit }: BirthDetailsFormProps) => {
   const validateForm = () => {
     const newErrors: Record<string, string> = {};
     
-    if (!name) newErrors.name = 'Name is required';
+    if (!name.trim()) newErrors.name = 'Name is required';
     if (!date) newErrors.date = 'Date of birth is required';
     if (!time) newErrors.time = 'Time of birth is required';
-    if (!location) newErrors.location = 'Birth location is required';
+    if (!location.trim()) newErrors.location = 'Birth location is required';
     
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
@@ -88,6 +112,19 @@ const BirthDetailsForm = ({ onSubmit }: BirthDetailsFormProps) => {
   };
   
   const handleStepChange = (step: number) => {
+    // Validate current step before allowing to move to a different step
+    if (step > activeStep) {
+      // Only validate if trying to move forward
+      const currentStepValid = validateCurrentStep();
+      if (!currentStepValid) {
+        toast({
+          title: "Invalid Input",
+          description: `Please complete the ${steps[activeStep].id} field`,
+          variant: "destructive",
+        });
+        return;
+      }
+    }
     setActiveStep(step);
   };
   
@@ -95,6 +132,13 @@ const BirthDetailsForm = ({ onSubmit }: BirthDetailsFormProps) => {
     if (activeStep < steps.length - 1) {
       if (validateCurrentStep()) {
         setActiveStep(activeStep + 1);
+      } else {
+        // Show toast for validation error
+        toast({
+          title: "Invalid Input",
+          description: `Please complete the ${steps[activeStep].id} field`,
+          variant: "destructive",
+        });
       }
     } else {
       handleSubmit(new Event('submit') as unknown as React.FormEvent);
