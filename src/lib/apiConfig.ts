@@ -10,6 +10,9 @@ export const API_ENDPOINTS = {
   FREE_ASTROLOGY_API: 'https://json.astrologyapi.com/v1/birth_details',
   // Aztro free horoscope API
   AZTRO_API: 'https://aztro.sameerkumar.website/',
+  // Add missing endpoints
+  BACKUP_BIRTH_CHART: 'https://api.vedicrishiastro.com/v1/birth_details',
+  ASTROLOGY_CHAT: 'https://api.openai.com/v1/chat/completions',
 };
 
 // API Keys for Vedic Astrology APIs

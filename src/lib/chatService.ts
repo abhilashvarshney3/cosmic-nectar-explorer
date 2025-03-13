@@ -1,4 +1,3 @@
-
 import { Message, BirthDetails, BirthChart } from './types';
 import { API_ENDPOINTS, API_KEYS } from './apiConfig';
 
