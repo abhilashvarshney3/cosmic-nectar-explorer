@@ -4,7 +4,7 @@ import { Circle, Settings } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
 import ConnectBackendModal from './ConnectBackendModal';
-import { hasAnyApiKey } from '@/lib/apiConfig';
+import { hasAnyApiKey, getAvailableApis } from '@/lib/apiConfig';
 import { useToast } from '@/hooks/use-toast';
 
 const BackendStatus = () => {
@@ -12,6 +12,7 @@ const BackendStatus = () => {
   const [isChecking, setIsChecking] = useState(true);
   const [modalOpen, setModalOpen] = useState(false);
   const { toast } = useToast();
+  const availableApis = getAvailableApis();
 
   const checkConfiguration = () => {
     setIsChecking(true);
@@ -66,8 +67,8 @@ const BackendStatus = () => {
           </Button>
         </TooltipTrigger>
         <TooltipContent side="left">
-          <p>{isConfigured ? "API Keys Configured" : "API Keys Not Configured"}</p>
-          <p className="text-xs text-gray-500">Click to configure</p>
+          <p>{isConfigured ? "Prokerala API Connected" : "API Not Connected"}</p>
+          <p className="text-xs text-gray-500">Free APIs: {availableApis.length} available</p>
         </TooltipContent>
       </Tooltip>
       
