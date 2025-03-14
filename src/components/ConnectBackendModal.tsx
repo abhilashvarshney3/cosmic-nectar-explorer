@@ -119,24 +119,30 @@ const ConnectBackendModal = ({ isOpen, onClose, onConnect }: ConnectBackendModal
             <h3 className="text-sm font-medium">AI Model Configuration</h3>
             <div className="space-y-2">
               <Label htmlFor="huggingFaceToken">
-                Hugging Face API Token (Optional)
+                Hugging Face API Token (Required for AI)
               </Label>
               <Input
                 id="huggingFaceToken"
                 type="password"
                 value={huggingFaceToken}
                 onChange={(e) => setHuggingFaceToken(e.target.value)}
-                placeholder="Enter Hugging Face API token (optional)"
+                placeholder="Enter Hugging Face API token"
               />
               <p className="text-xs text-gray-500">
-                A token is not required but will increase your rate limits. You can get a free API token from <a href="https://huggingface.co/settings/tokens" target="_blank" rel="noopener noreferrer" className="text-blue-500 hover:underline">Hugging Face</a>.
+                <span className="text-amber-700 font-medium">Important:</span> The Hugging Face token is required for the AI to work properly. You can get a free API token from <a href="https://huggingface.co/settings/tokens" target="_blank" rel="noopener noreferrer" className="text-blue-500 hover:underline">Hugging Face</a>. Without this token, the app will use fallback responses.
               </p>
             </div>
           </div>
           
-          <p className="text-xs text-gray-500">
-            Your Prokerala API credentials are pre-configured, but adding a Hugging Face token will provide better AI responses.
-          </p>
+          <div className="p-3 bg-blue-50 border border-blue-200 rounded text-sm text-blue-800">
+            <p><strong>Need a Hugging Face token?</strong></p>
+            <ol className="list-decimal pl-5 mt-1 space-y-1">
+              <li>Create an account on <a href="https://huggingface.co/join" target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline">Hugging Face</a></li>
+              <li>Go to Settings → <a href="https://huggingface.co/settings/tokens" target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline">Access Tokens</a></li>
+              <li>Create a new token with "Read" access</li>
+              <li>Copy and paste it into the field above</li>
+            </ol>
+          </div>
         </div>
         
         <DialogFooter className="mt-6">

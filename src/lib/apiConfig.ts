@@ -15,7 +15,9 @@ export const API_ENDPOINTS = {
   BACKUP_BIRTH_CHART: 'https://api.vedicrishiastro.com/v1/birth_details',
   ASTROLOGY_CHAT: 'https://api.openai.com/v1/chat/completions',
   // Hugging Face inference API for open source model
-  VEDIC_AI_API: 'https://api-inference.huggingface.co/models/NotASanePerson/indic-astrology-minillama'
+  VEDIC_AI_API: 'https://api-inference.huggingface.co/models/NotASanePerson/indic-astrology-minillama',
+  // Free OpenAI-compatible API for astronomy
+  FREE_AI_API: 'https://api.free-ai-service.org/v1/chat/completions'
 };
 
 // API Keys for Vedic Astrology APIs

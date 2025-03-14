@@ -39,13 +39,14 @@ const ChatInterface = ({ birthDetails, onBackClick }: ChatInterfaceProps) => {
         setIsTyping(true);
         setIsError(false);
         setMessages([]); // Clear messages when birth details change
+        setBirthChart(null); // Clear previous birth chart
         
         try {
           console.log('Generating new birth chart with details:', birthDetails);
           // Generate birth chart first
           const chart = await generateBirthChart(birthDetails);
           setBirthChart(chart);
-          setApiSource('Hugging Face Vedic Astrology AI');
+          setApiSource('Vedic Astrology AI');
           
           // Then get initial greeting message
           const response = await sendMessage(
@@ -53,6 +54,12 @@ const ChatInterface = ({ birthDetails, onBackClick }: ChatInterfaceProps) => {
             birthDetails,
             chart
           );
+          
+          // Set API source based on response
+          if (response.source) {
+            setApiSource(response.source);
+          }
+          
           setMessages([response]);
         } catch (error) {
           console.error('Failed to initialize chat:', error);
@@ -95,6 +102,12 @@ const ChatInterface = ({ birthDetails, onBackClick }: ChatInterfaceProps) => {
     try {
       // Get AI response
       const aiResponse = await sendMessage(inputValue, birthDetails, birthChart || undefined);
+      
+      // Update API source if provided
+      if (aiResponse.source) {
+        setApiSource(aiResponse.source);
+      }
+      
       setMessages(prev => [...prev, aiResponse]);
     } catch (error) {
       console.error('Failed to send message:', error);
@@ -110,7 +123,8 @@ const ChatInterface = ({ birthDetails, onBackClick }: ChatInterfaceProps) => {
         id: Date.now().toString(),
         content: "I'm sorry, I couldn't connect to the astrology analysis service. Please try again later.",
         sender: 'ai',
-        timestamp: new Date()
+        timestamp: new Date(),
+        source: 'Fallback System'
       };
       setMessages(prev => [...prev, fallbackMessage]);
     } finally {
@@ -127,6 +141,8 @@ const ChatInterface = ({ birthDetails, onBackClick }: ChatInterfaceProps) => {
     birthDetailsRef.current = '';
     setMessages([]);
     setIsTyping(true);
+    setApiSource('');
+    setBirthChart(null);
     
     try {
       console.log('Retrying connection with details:', birthDetails);
@@ -137,6 +153,12 @@ const ChatInterface = ({ birthDetails, onBackClick }: ChatInterfaceProps) => {
         birthDetails,
         chart
       );
+      
+      // Update API source if provided
+      if (response.source) {
+        setApiSource(response.source);
+      }
+      
       setMessages([response]);
       setIsError(false);
     } catch (error) {
