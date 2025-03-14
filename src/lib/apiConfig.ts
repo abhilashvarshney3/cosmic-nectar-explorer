@@ -30,7 +30,7 @@ export const API_KEYS = {
   VEDICRISHIASTRO_API_KEY: '',
   OPENAI_API_KEY: '',
   // Hugging Face API token (can be empty for anonymous requests with rate limits)
-  HUGGINGFACE_API_TOKEN: localStorage.getItem('HUGGINGFACE_API_TOKEN') || '',
+  HUGGINGFACE_API_TOKEN: localStorage.getItem('HUGGINGFACE_API_TOKEN') || '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',
 };
 
 // Save API key to localStorage
