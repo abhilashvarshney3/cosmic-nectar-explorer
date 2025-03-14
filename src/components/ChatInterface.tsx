@@ -1,7 +1,7 @@
 
 import { useState, useRef, useEffect } from 'react';
 import { Message, BirthDetails, BirthChart as BirthChartType } from '@/lib/types';
-import { sendMessage, generateBirthChart } from '@/lib/chatService';
+import { sendMessage, generateBirthChart } from '@/lib/astrologyService';
 import MessageBubble from './MessageBubble';
 import BirthChart from './BirthChart';
 import { ArrowUp, Mic, RotateCcw, ArrowLeft, Info } from 'lucide-react';
