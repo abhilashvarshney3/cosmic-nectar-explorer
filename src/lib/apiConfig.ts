@@ -19,7 +19,7 @@ export const API_ENDPOINTS = {
 // Default to your Prokerala keys
 export const API_KEYS = {
   PROKERALA_CLIENT_ID: localStorage.getItem('PROKERALA_CLIENT_ID') || 'a677256b-ad62-4d2b-b484-527ee55d5c2a',
-  PROKERALA_CLIENT_SECRET: localStorage.getItem('PROKERALA_CLIENT_SECRET') || 'AyyKHrLr4ZJO2QYzhEouJprvX4snaqgeStmvp1Uw',
+  PROKERALA_CLIENT_SECRET: localStorage.getItem('PROKERALA_CLIENT_SECRET') || 'FqIaaDJ8ZPXHsJHCTXoBzDbAbK67znsjkYCnR4V2',
   // Other API keys are kept empty as we're focusing on free options
   VEDICRISHIASTRO_USER_ID: '',
   VEDICRISHIASTRO_API_KEY: '',
