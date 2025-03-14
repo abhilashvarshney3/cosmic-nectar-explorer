@@ -25,6 +25,7 @@ interface ConnectBackendModalProps {
 const ConnectBackendModal = ({ isOpen, onClose, onConnect }: ConnectBackendModalProps) => {
   const [prokeralaClientId, setProkeralaClientId] = useState(API_KEYS.PROKERALA_CLIENT_ID);
   const [prokeralaClientSecret, setProkeralaClientSecret] = useState(API_KEYS.PROKERALA_CLIENT_SECRET);
+  const [huggingFaceToken, setHuggingFaceToken] = useState(API_KEYS.HUGGINGFACE_API_TOKEN);
   const [isConnecting, setIsConnecting] = useState(false);
   const { toast } = useToast();
   const availableApis = getAvailableApis();
@@ -34,6 +35,7 @@ const ConnectBackendModal = ({ isOpen, onClose, onConnect }: ConnectBackendModal
     if (isOpen) {
       setProkeralaClientId(API_KEYS.PROKERALA_CLIENT_ID);
       setProkeralaClientSecret(API_KEYS.PROKERALA_CLIENT_SECRET);
+      setHuggingFaceToken(API_KEYS.HUGGINGFACE_API_TOKEN);
     }
   }, [isOpen]);
 
@@ -44,19 +46,20 @@ const ConnectBackendModal = ({ isOpen, onClose, onConnect }: ConnectBackendModal
       // Save API keys to localStorage
       if (prokeralaClientId) saveApiKey('PROKERALA_CLIENT_ID', prokeralaClientId);
       if (prokeralaClientSecret) saveApiKey('PROKERALA_CLIENT_SECRET', prokeralaClientSecret);
+      if (huggingFaceToken) saveApiKey('HUGGINGFACE_API_TOKEN', huggingFaceToken);
       
       // Check if Prokerala API keys are provided
       if (hasAnyApiKey()) {
         toast({
           title: "API Keys Saved",
-          description: "Your Prokerala API keys have been saved for free astrology calculations."
+          description: "Your API keys have been saved for astrology calculations and AI responses."
         });
         onConnect('');
         onClose();
       } else {
         toast({
           title: "No API Keys Provided",
-          description: "Please provide Prokerala API keys to use the service.",
+          description: "Please provide API keys to use the service.",
           variant: "destructive"
         });
       }
@@ -78,7 +81,7 @@ const ConnectBackendModal = ({ isOpen, onClose, onConnect }: ConnectBackendModal
         <DialogHeader>
           <DialogTitle>Configure Astrology API</DialogTitle>
           <DialogDescription>
-            The application is already configured with Prokerala API keys. You can edit them if needed.
+            Configure API keys for birth chart calculation and AI responses.
           </DialogDescription>
         </DialogHeader>
         
@@ -111,8 +114,28 @@ const ConnectBackendModal = ({ isOpen, onClose, onConnect }: ConnectBackendModal
               placeholder="Enter Prokerala Client Secret"
             />
           </div>
+          
+          <div className="space-y-2 mt-6">
+            <h3 className="text-sm font-medium">AI Model Configuration</h3>
+            <div className="space-y-2">
+              <Label htmlFor="huggingFaceToken">
+                Hugging Face API Token (Optional)
+              </Label>
+              <Input
+                id="huggingFaceToken"
+                type="password"
+                value={huggingFaceToken}
+                onChange={(e) => setHuggingFaceToken(e.target.value)}
+                placeholder="Enter Hugging Face API token (optional)"
+              />
+              <p className="text-xs text-gray-500">
+                A token is not required but will increase your rate limits. You can get a free API token from <a href="https://huggingface.co/settings/tokens" target="_blank" rel="noopener noreferrer" className="text-blue-500 hover:underline">Hugging Face</a>.
+              </p>
+            </div>
+          </div>
+          
           <p className="text-xs text-gray-500">
-            Your Prokerala API credentials are pre-configured. You only need to change them if you want to use different credentials.
+            Your Prokerala API credentials are pre-configured, but adding a Hugging Face token will provide better AI responses.
           </p>
         </div>
         

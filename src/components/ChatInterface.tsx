@@ -1,10 +1,12 @@
+
 import { useState, useRef, useEffect } from 'react';
 import { Message, BirthDetails, BirthChart as BirthChartType } from '@/lib/types';
 import { sendMessage, generateBirthChart } from '@/lib/chatService';
 import MessageBubble from './MessageBubble';
 import BirthChart from './BirthChart';
-import { ArrowUp, Mic, RotateCcw, ArrowLeft } from 'lucide-react';
+import { ArrowUp, Mic, RotateCcw, ArrowLeft, Info } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
+import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
 
 interface ChatInterfaceProps {
   birthDetails: BirthDetails;
@@ -18,6 +20,7 @@ const ChatInterface = ({ birthDetails, onBackClick }: ChatInterfaceProps) => {
   const [birthChart, setBirthChart] = useState<BirthChartType | null>(null);
   const [showBirthChart, setShowBirthChart] = useState(true);
   const [isError, setIsError] = useState(false);
+  const [apiSource, setApiSource] = useState<string>('');
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const { toast } = useToast();
   
@@ -42,10 +45,11 @@ const ChatInterface = ({ birthDetails, onBackClick }: ChatInterfaceProps) => {
           // Generate birth chart first
           const chart = await generateBirthChart(birthDetails);
           setBirthChart(chart);
+          setApiSource('Hugging Face Vedic Astrology AI');
           
           // Then get initial greeting message
           const response = await sendMessage(
-            `Hello, I'm ${birthDetails.name}. Please analyze my birth chart.`, 
+            `Hello, I'm ${birthDetails.name}. Please analyze my birth chart based on Vedic astrology.`, 
             birthDetails,
             chart
           );
@@ -129,7 +133,7 @@ const ChatInterface = ({ birthDetails, onBackClick }: ChatInterfaceProps) => {
       const chart = await generateBirthChart(birthDetails);
       setBirthChart(chart);
       const response = await sendMessage(
-        `Hello, I'm ${birthDetails.name}. Please analyze my birth chart.`, 
+        `Hello, I'm ${birthDetails.name}. Please analyze my birth chart based on Vedic astrology.`, 
         birthDetails,
         chart
       );
@@ -157,6 +161,19 @@ const ChatInterface = ({ birthDetails, onBackClick }: ChatInterfaceProps) => {
           <h2 className="text-lg font-cinzel">Vedic Astrology Consultation</h2>
         </div>
         <div className="flex items-center space-x-2">
+          {apiSource && (
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <div className="flex items-center text-xs px-2 py-1 bg-white/10 rounded">
+                  <Info size={12} className="mr-1" />
+                  <span>AI: {apiSource}</span>
+                </div>
+              </TooltipTrigger>
+              <TooltipContent>
+                <p>Using {apiSource} for responses</p>
+              </TooltipContent>
+            </Tooltip>
+          )}
           {isError && (
             <button 
               onClick={retryConnection}

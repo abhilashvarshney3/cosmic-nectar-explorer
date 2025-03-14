@@ -1,3 +1,4 @@
+
 // API endpoints configuration for our application
 
 // Free Vedic Astrology API endpoints
@@ -13,6 +14,8 @@ export const API_ENDPOINTS = {
   // Add missing endpoints
   BACKUP_BIRTH_CHART: 'https://api.vedicrishiastro.com/v1/birth_details',
   ASTROLOGY_CHAT: 'https://api.openai.com/v1/chat/completions',
+  // Hugging Face inference API for open source model
+  VEDIC_AI_API: 'https://api-inference.huggingface.co/models/NotASanePerson/indic-astrology-minillama'
 };
 
 // API Keys for Vedic Astrology APIs
@@ -24,6 +27,8 @@ export const API_KEYS = {
   VEDICRISHIASTRO_USER_ID: '',
   VEDICRISHIASTRO_API_KEY: '',
   OPENAI_API_KEY: '',
+  // Hugging Face API token (can be empty for anonymous requests with rate limits)
+  HUGGINGFACE_API_TOKEN: localStorage.getItem('HUGGINGFACE_API_TOKEN') || '',
 };
 
 // Save API key to localStorage
@@ -49,6 +54,9 @@ export const getAvailableApis = (): string[] => {
   
   // Add other free APIs
   apis.push('Aztro Free Horoscope');
+  
+  // Add Hugging Face open source Vedic astrology model
+  apis.push('Hugging Face Vedic Astrology AI');
   
   return apis;
 };
