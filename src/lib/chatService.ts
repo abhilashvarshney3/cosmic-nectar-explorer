@@ -629,53 +629,64 @@ const generateDeterministicResponse = (message: string, birthChart?: BirthChart,
 };
 
 // Helper functions for deterministic responses
-const getZodiacSign = (index: number): string => {
-  const signs = ["Aries", "Taurus", "Gemini", "Cancer", "Leo", "Virgo", "Libra", "Scorpio", "Sagittarius", "Capricorn", "Aquarius", "Pisces"];
-  return signs[index % signs.length];
-};
-
-const getHouseNumber = (index: number): number => {
-  return (index % 12) + 1;
-};
-
-const getDayOfWeek = (index: number): string => {
-  const days = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"];
-  return days[index % days.length];
-};
-
-const getPlant = (index: number): string => {
-  const plants = ["Tulsi (Holy Basil)", "Peepal tree", "Banana tree", "Neem tree", "Sandalwood tree"];
-  return plants[index % plants.length];
-};
-
-const getFood = (index: number): string => {
-  const foods = ["rice", "yellow lentils", "sweets", "milk", "fruits", "wheat", "sesame seeds", "mixed grains"];
-  return foods[index % foods.length];
-};
-
-const getMantra = (index: number): string => {
-  const mantras = ["Gayatri Mantra", "Mahamrityunjaya Mantra", "Om Namah Shivaya", "Hanuman Chalisa", "Saturn Beej Mantra", "Venus Mantra", "Jupiter Mantra", "Sun Beej Mantra", "Moon Mantra"];
-  return mantras[index % mantras.length];
-};
-
-const getYogaType = (index: number): string => {
-  const yogaTypes = ["Hatha Yoga", "Bhakti Yoga", "Karma Yoga", "Raja Yoga", "Jnana Yoga", "Kundalini Yoga"];
-  return yogaTypes[index % yogaTypes.length];
-};
-
-const getAnimal = (index: number): string => {
-  const animals = ["crows", "dogs", "cows", "birds", "ants", "fish", "turtles"];
-  return animals[index % animals.length];
-};
-
-const getColor = (index: number): string => {
-  const colors = ["red", "yellow", "blue", "green", "white", "black", "orange", "purple", "silver", "gold"];
-  return colors[index % colors.length];
-};
-
 const getCareerField = (index: number): string => {
   const fields = [
     "technology and innovation", "healthcare and wellness", "education and teaching", 
     "finance and banking", "creative arts and design", "law and justice", 
     "science and research", "media and communication", "service industries", 
     "entrepreneurship", "public service", "spiritual and counseling roles"
+  ];
+  return fields[index % fields.length];
+};
+
+// Helper function to get career approach
+const getCareerApproach = (index: number): string => {
+  const approaches = [
+    "networking and building relationships", "continuous learning and education",
+    "focused specialization", "adaptability and versatility",
+    "leadership and team management", "innovation and creative thinking",
+    "technical expertise", "service-oriented approach"
+  ];
+  return approaches[index % approaches.length];
+};
+
+// Helper function to get financial field
+const getFinancialField = (index: number): string => {
+  const fields = [
+    "investments and trading", "business ownership", "professional career",
+    "real estate", "creative ventures", "technology and innovation",
+    "service-based businesses", "teaching and knowledge sharing", "partnership ventures"
+  ];
+  return fields[index % fields.length];
+};
+
+// Helper function to get personality trait
+const getPersonalityTrait = (index: number): string => {
+  const traits = [
+    "intelligent and analytical", "compassionate and nurturing", "creative and expressive",
+    "determined and persistent", "adaptable and versatile", "practical and detail-oriented",
+    "optimistic and enthusiastic", "loyal and dependable", "charismatic and inspiring",
+    "disciplined and structured", "intuitive and perceptive", "honest and sincere",
+    "adventurous and bold", "peaceful and harmonious", "passionate and intense"
+  ];
+  return traits[index % traits.length];
+};
+
+// Helper function to get meeting venue
+const getMeetingVenue = (index: number): string => {
+  const venues = [
+    "educational settings or classes", "through mutual friends", "work or professional environments",
+    "spiritual or religious gatherings", "travel or foreign locations", "family connections",
+    "online or social media", "community events or volunteer work", "hobbies or recreational activities",
+    "unexpected chance encounters"
+  ];
+  return venues[index % venues.length];
+};
+
+// Helper function to get relationship quality
+const getRelationshipQuality = (index: number): string => {
+  const qualities = [
+    "intellectual stimulation", "emotional security", "spiritual connection",
+    "financial stability", "passion and romance", "friendship and companionship",
+    "mutual growth and support", "shared values and life goals", "honesty and transparency",
+    "respect for independence
